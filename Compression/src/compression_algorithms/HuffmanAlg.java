@@ -13,6 +13,11 @@ import java.util.PriorityQueue;
 public class HuffmanAlg extends Compressor {
 
 	private HashMap<Character, Hchar> _dicCharToBin;
+	
+	public HashMap<Character, Hchar> getTable() {
+		return _dicCharToBin;
+	}
+
 	PriorityQueue<Hchar> _queHTree;
 	Hchar _hTop;
 	
@@ -50,12 +55,12 @@ public class HuffmanAlg extends Compressor {
 			buildHTreeFromQueue();
 		}
 		
-		BitSet arrEncoded = new BitSet();
+		byte[] arrEncoded= new byte[] {};
 		for (char cChar : input.toCharArray()) {
-			arrEncoded = joinBitSets(arrEncoded, _dicCharToBin.get(cChar).binRep);
+			arrEncoded = joinByteArray(arrEncoded, _dicCharToBin.get(cChar).binRep);
 		}
 
-		return arrEncoded.toByteArray();
+		return arrEncoded;
 	}
 	
 	@Override
@@ -114,7 +119,7 @@ public class HuffmanAlg extends Compressor {
 		
 		_hTop = _queHTree.peek();
 		
-		DFSbinRep(_hTop, new BitSet());
+		DFSbinRep(_hTop, new byte[] {});
 		
 		// Print the outcome for test purposes
 		System.out.println("Dictionary:");
@@ -129,26 +134,17 @@ public class HuffmanAlg extends Compressor {
 	private void reverseDictionary() {
 		_dicBinToChar = new HashMap<ByteArrayWrapper, Character>();
 		for (Entry<Character, Hchar> pair : _dicCharToBin.entrySet()) {
-			_dicBinToChar.put(new ByteArrayWrapper(pair.getValue().binRep.toByteArray()), pair.getKey());
+			_dicBinToChar.put(new ByteArrayWrapper(pair.getValue().binRep), pair.getKey());
 		}
 	}
 
-	private void DFSbinRep(Hchar node, BitSet bin) {
-		node.binRep = joinBitSets(node.binRep, bin);
-		
-		BitSet extraBit = new BitSet();
-		
+	private void DFSbinRep(Hchar node, byte[] bin) {
+		node.binRep = joinByteArray(node.binRep, bin);
 		if (node.left != null) {
-			
-			extraBit = addBit(new BitSet(), 0);
-			
-			DFSbinRep(node.left, joinBitSets(node.binRep, extraBit));
+			DFSbinRep(node.left, joinByteArray(node.binRep, new byte[] {0}));
 		}
 		if (node.right != null) {
-
-			extraBit = addBit(new BitSet(), 1);
-			
-			DFSbinRep(node.right, joinBitSets(node.binRep, extraBit));
+			DFSbinRep(node.right, joinByteArray(node.binRep, new byte[] {1}));
 		}
 	}
 	
@@ -169,26 +165,11 @@ public class HuffmanAlg extends Compressor {
 		return countAppearance;
 	}
 	
-	private BitSet addBit(BitSet bitSet, int bit) {
-		BitSet newBitSet = new BitSet(bitSet.length() + 1);
-		for (int i = 0; i < bitSet.length(); i++) {
-			newBitSet.set(0, bitSet.get(i));
-		}
-		newBitSet.set(bitSet.length(), bit);
+	private byte[] joinByteArray(byte[] arr1, byte[] arr2) {
+		byte[] joined = new byte[arr1.length + arr2.length];
 		
-		return newBitSet;
-	}
-	
-	private BitSet joinBitSets(BitSet bitSet1, BitSet bitSet2) {
-		BitSet joined = new BitSet(bitSet1.length() + bitSet2.length());
-		
-		int j = 0;
-		for (int i = 0; i < bitSet1.length(); i++, j++) {
-			joined.set(j, bitSet1.get(i));
-		}
-		for (int i = 0; i < bitSet2.length(); i++, j++) {
-			joined.set(j, bitSet2.get(i));
-		}
+		System.arraycopy(arr1,0,joined,0 ,arr1.length);
+		System.arraycopy(arr2,0,joined,arr1.length,arr2.length);
 		
 		return joined;
 	}
@@ -198,7 +179,7 @@ public class HuffmanAlg extends Compressor {
 		String character;
 		Hchar left = null, right = null;
 		// an inefficient representation, change it to real bits!
-		BitSet binRep = new BitSet();
+		byte[] binRep = new byte[0];
 
 		@Override
 		public int hashCode() {

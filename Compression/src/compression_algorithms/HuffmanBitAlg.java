@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
-public class HuffmanByteAlg extends Compressor {
+public class HuffmanBitAlg extends Compressor {
 
 	private HashMap<Character, Hchar> _dicCharToBin;
 	PriorityQueue<Hchar> _queHTree;
@@ -19,7 +19,7 @@ public class HuffmanByteAlg extends Compressor {
 	// For quick de-compression - a reverse dictionary
 	private HashMap<ByteArrayWrapper, Character> _dicBinToChar;
 
-	public HuffmanByteAlg(HashMap<Character, Hchar> dicCharToBin) {
+	public HuffmanBitAlg(HashMap<Character, Hchar> dicCharToBin) {
 		_queHTree = new PriorityQueue<Hchar>(new Comparator<Hchar>() {
 			@Override
 			public int compare(Hchar o1, Hchar o2) {
@@ -30,7 +30,7 @@ public class HuffmanByteAlg extends Compressor {
 		_dicCharToBin = dicCharToBin;
 	}
 	
-	public HuffmanByteAlg() {
+	public HuffmanBitAlg() {
 		_queHTree = new PriorityQueue<Hchar>(new Comparator<Hchar>() {
 			@Override
 			public int compare(Hchar o1, Hchar o2) {
@@ -50,12 +50,12 @@ public class HuffmanByteAlg extends Compressor {
 			buildHTreeFromQueue();
 		}
 		
-		byte[] arrEncoded= new byte[] {};
+		BitSet arrEncoded = new BitSet();
 		for (char cChar : input.toCharArray()) {
-			arrEncoded = joinByteArray(arrEncoded, _dicCharToBin.get(cChar).binRep);
+			arrEncoded = joinBitSets(arrEncoded, _dicCharToBin.get(cChar).binRep);
 		}
 
-		return arrEncoded;
+		return arrEncoded.toByteArray();
 	}
 	
 	@Override
@@ -114,7 +114,7 @@ public class HuffmanByteAlg extends Compressor {
 		
 		_hTop = _queHTree.peek();
 		
-		DFSbinRep(_hTop, new byte[] {});
+		DFSbinRep(_hTop, new BitSet());
 		
 		// Print the outcome for test purposes
 		System.out.println("Dictionary:");
@@ -129,17 +129,26 @@ public class HuffmanByteAlg extends Compressor {
 	private void reverseDictionary() {
 		_dicBinToChar = new HashMap<ByteArrayWrapper, Character>();
 		for (Entry<Character, Hchar> pair : _dicCharToBin.entrySet()) {
-			_dicBinToChar.put(new ByteArrayWrapper(pair.getValue().binRep), pair.getKey());
+			_dicBinToChar.put(new ByteArrayWrapper(pair.getValue().binRep.toByteArray()), pair.getKey());
 		}
 	}
 
-	private void DFSbinRep(Hchar node, byte[] bin) {
-		node.binRep = joinByteArray(node.binRep, bin);
+	private void DFSbinRep(Hchar node, BitSet bin) {
+		node.binRep = joinBitSets(node.binRep, bin);
+		
+		BitSet extraBit = new BitSet();
+		
 		if (node.left != null) {
-			DFSbinRep(node.left, joinByteArray(node.binRep, new byte[] {0}));
+			
+			extraBit = addBit(new BitSet(), 0);
+			
+			DFSbinRep(node.left, joinBitSets(node.binRep, extraBit));
 		}
 		if (node.right != null) {
-			DFSbinRep(node.right, joinByteArray(node.binRep, new byte[] {1}));
+
+			extraBit = addBit(new BitSet(), 1);
+			
+			DFSbinRep(node.right, joinBitSets(node.binRep, extraBit));
 		}
 	}
 	
@@ -160,11 +169,26 @@ public class HuffmanByteAlg extends Compressor {
 		return countAppearance;
 	}
 	
-	private byte[] joinByteArray(byte[] arr1, byte[] arr2) {
-		byte[] joined = new byte[arr1.length + arr2.length];
+	private BitSet addBit(BitSet bitSet, int bit) {
+		BitSet newBitSet = new BitSet(bitSet.length() + 1);
+		for (int i = 0; i < bitSet.length(); i++) {
+			newBitSet.set(0, bitSet.get(i));
+		}
+		newBitSet.set(bitSet.length(), bit);
 		
-		System.arraycopy(arr1,0,joined,0 ,arr1.length);
-		System.arraycopy(arr2,0,joined,arr1.length,arr2.length);
+		return newBitSet;
+	}
+	
+	private BitSet joinBitSets(BitSet bitSet1, BitSet bitSet2) {
+		BitSet joined = new BitSet(bitSet1.length() + bitSet2.length());
+		
+		int j = 0;
+		for (int i = 0; i < bitSet1.length(); i++, j++) {
+			joined.set(j, bitSet1.get(i));
+		}
+		for (int i = 0; i < bitSet2.length(); i++, j++) {
+			joined.set(j, bitSet2.get(i));
+		}
 		
 		return joined;
 	}
@@ -174,7 +198,7 @@ public class HuffmanByteAlg extends Compressor {
 		String character;
 		Hchar left = null, right = null;
 		// an inefficient representation, change it to real bits!
-		byte[] binRep = new byte[0];
+		BitSet binRep = new BitSet();
 
 		@Override
 		public int hashCode() {
