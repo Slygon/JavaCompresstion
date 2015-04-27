@@ -11,10 +11,11 @@ public class HuffmanReader extends Reader {
 
 	Reader _in;
 	HuffmanStringAlg _huff;
+	int lastIndex = 0;
 	
 	public HuffmanReader(Reader in, HuffmanStringAlg huff) {
 		_in = in;
-		_huff = huff;;
+		_huff = huff;
 	}
 	
 //	public HuffmanReader(Reader in, HashMap<Character, Hchar> dicCharToBin) {
@@ -24,11 +25,18 @@ public class HuffmanReader extends Reader {
 	
 	@Override
 	public int read(char[] cbuf, int off, int len) throws IOException {
-		int a = _in.read(cbuf, off, len);
-		char[] arrDecompressed = Arrays.copyOf(cbuf, len);
-		String decompressed = _huff.decompress(new String(arrDecompressed));
-		cbuf = decompressed.toCharArray();
-		return len;
+		char[] temp = new char[len];
+		int a = _in.read(temp, off, len);
+		
+		if (a != -1) {
+			String decompressed = _huff.decompress(new String(temp));
+			System.arraycopy(decompressed.toCharArray(), 0, cbuf, lastIndex, decompressed.length());
+			lastIndex += decompressed.length();
+			
+			return decompressed.length();
+		}
+		
+		return a;
 	}
 
 	@Override
