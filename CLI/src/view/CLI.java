@@ -13,10 +13,6 @@ import compression_algorithms.HuffmanStringAlg;
 import compression_algorithms.HuffmanWriter;
 
 public class CLI {
-	BufferedReader _in;
-	PrintWriter _out;
-	HuffmanStringAlg _alg;
-
 	HashMap<String, Command> _comms;
 
 	public CLI(Command[] comms) {
@@ -30,26 +26,6 @@ public class CLI {
 
 		for (Command command : comms) {
 			_comms.put(command.toString(), command);
-		}
-	}
-
-	private void initReadWrite(String strFileName) {
-		_alg = new HuffmanStringAlg();
-
-		try {
-			_out = new PrintWriter(new HuffmanWriter(
-					new FileWriter(strFileName), _alg));
-			// out.print(s);
-			// out.flush();
-			// out.close();
-
-			_in = new BufferedReader(new HuffmanReader(new FileReader(
-					strFileName), _alg));
-			// String sRead = in.readLine();
-			// in.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

@@ -96,6 +96,10 @@ public class HuffmanStringAlg extends Compressor {
 	 */
 	private void reverseDictionary() {
 		_dicBinToChar = new HashMap<String, Character>();
+		
+		if (_dicCharToBin == null)
+			System.out.println("Huffman: No dictionary found!");
+		
 		for (Entry<Character, Hchar> pair : _dicCharToBin.entrySet()) {
 			_dicBinToChar.put(pair.getValue().binRep, pair.getKey());
 		}

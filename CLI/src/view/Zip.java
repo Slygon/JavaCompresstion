@@ -11,14 +11,15 @@ public class Zip implements Command {
 	@Override
 	public void doCommand(String strParam) {
 		try {
-			
+
 			byte[] buffer = new byte[1024];
 
 			File file = new File(strParam);
-			if (file.exists() && file.isFile()) {
+
+			if (Utils.checkFileExists(strParam, null)) {
 				// Input - file
 				FileInputStream in = new FileInputStream(strParam);
-				
+
 				// Output - zip
 				FileOutputStream fos = new FileOutputStream(strParam + ".zip");
 				ZipOutputStream zos = new ZipOutputStream(fos);
@@ -37,8 +38,6 @@ public class Zip implements Command {
 				zos.close();
 
 				System.out.println("Done");
-			} else {
-				System.out.println("Could not find file \"" + strParam + "\"");
 			}
 
 		} catch (IOException ex) {
