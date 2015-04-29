@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.util.Arrays;
 
 import compression_algorithms.Compressor;
@@ -25,14 +24,14 @@ public class test {
 		testHuffmeanReadWrite(s);
 		System.out.println();
 
-//		testHuffmanByte(s);
-//		System.out.println();
+		testHuffmanByte(s);
+		System.out.println();
 		
-//		testHuffmanString(s);
-//		System.out.println();
+		testHuffmanString(s);
+		System.out.println();
 
-//		testHuffmanBit(s);
-//		System.out.println();
+		testHuffmanBit(s);
+		System.out.println();
 	}
 
 	private static void testHuffmeanReadWrite(String s) {

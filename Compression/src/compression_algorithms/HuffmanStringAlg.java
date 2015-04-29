@@ -1,10 +1,7 @@
 package compression_algorithms;
 
-import java.awt.event.ActionEvent;
-import java.io.ObjectOutputStream;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 

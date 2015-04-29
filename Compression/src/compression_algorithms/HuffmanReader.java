@@ -2,10 +2,6 @@ package compression_algorithms;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
-import java.util.HashMap;
-
-import compression_algorithms.HuffmanAlg.Hchar;
 
 public class HuffmanReader extends Reader {
 

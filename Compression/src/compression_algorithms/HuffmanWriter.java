@@ -1,13 +1,8 @@
 package compression_algorithms;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.Writer;
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.HashMap;
-
-import compression_algorithms.HuffmanAlg.Hchar;
 
 public class HuffmanWriter extends Writer {
 
