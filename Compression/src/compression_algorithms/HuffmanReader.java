@@ -6,10 +6,10 @@ import java.io.Reader;
 public class HuffmanReader extends Reader {
 
 	Reader _in;
-	HuffmanStringAlg _huff;
+	HuffmanAlg _huff;
 	int lastIndex = 0;
 	
-	public HuffmanReader(Reader in, HuffmanStringAlg huff) {
+	public HuffmanReader(Reader in, HuffmanAlg huff) {
 		_in = in;
 		_huff = huff;
 	}

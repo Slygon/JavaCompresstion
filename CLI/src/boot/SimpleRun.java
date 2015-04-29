@@ -11,14 +11,14 @@ import view.Unhuf;
 import view.Unzip;
 import view.Zip;
 
-import compression_algorithms.HuffmanStringAlg;
+import compression_algorithms.HuffmanAlg;
 
 
 public class SimpleRun {
 
 	public static void main(String[] args) {
 		
-		HuffmanStringAlg alg = new HuffmanStringAlg();
+		HuffmanAlg alg = new HuffmanAlg();
 		Command[] comms = new Command[] {
 			new Dir(),
 			new Zip(),

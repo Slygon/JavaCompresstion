@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 
 import compression_algorithms.HuffmanReader;
-import compression_algorithms.HuffmanStringAlg;
+import compression_algorithms.HuffmanAlg;
 import compression_algorithms.HuffmanWriter;
 
 public class CLI {

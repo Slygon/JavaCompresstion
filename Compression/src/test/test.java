@@ -8,10 +8,10 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 
 import compression_algorithms.Compressor;
-import compression_algorithms.HuffmanAlg;
+import compression_algorithms.HuffmanByteAlg;
 import compression_algorithms.HuffmanBitAlg;
 import compression_algorithms.HuffmanReader;
-import compression_algorithms.HuffmanStringAlg;
+import compression_algorithms.HuffmanAlg;
 import compression_algorithms.HuffmanWriter;
 
 public class test {
@@ -36,7 +36,7 @@ public class test {
 
 	private static void testHuffmeanReadWrite(String s) {
 		try {
-			HuffmanStringAlg alg = new HuffmanStringAlg();
+			HuffmanAlg alg = new HuffmanAlg();
 			
 			PrintWriter out = new PrintWriter(new HuffmanWriter(new FileWriter("out.hff"), alg));
 			out.print(s);
@@ -71,7 +71,7 @@ public class test {
 
 	private static void testHuffmanByte(String input) {
 		
-		Compressor comp = new HuffmanAlg();
+		Compressor comp = new HuffmanByteAlg();
 		byte[] sEncoded = (byte[])comp.compress(input);
 		System.out.println(Arrays.toString(sEncoded));
 		
@@ -81,7 +81,7 @@ public class test {
 	
 	private static void testHuffmanString(String input) {
 
-		Compressor comp = new HuffmanStringAlg();
+		Compressor comp = new HuffmanAlg();
 		String sEncoded = (String) comp.compress(input);
 		System.out.println(sEncoded);
 		

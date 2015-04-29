@@ -1,20 +1,26 @@
 package compression_algorithms;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
-public class HuffmanStringAlg extends Compressor {
+public class HuffmanByteAlg extends Compressor {
 
 	private HashMap<Character, Hchar> _dicCharToBin;
+	
+	public HashMap<Character, Hchar> getTable() {
+		return _dicCharToBin;
+	}
+
 	PriorityQueue<Hchar> _queHTree;
 	Hchar _hTop;
 	
 	// For quick de-compression - a reverse dictionary
-	private HashMap<String, Character> _dicBinToChar;
+	private HashMap<ByteArrayWrapper, Character> _dicBinToChar;
 
-	public HuffmanStringAlg(HashMap<Character, Hchar> dicCharToBin) {
+	public HuffmanByteAlg(HashMap<Character, Hchar> dicCharToBin) {
 		_queHTree = new PriorityQueue<Hchar>(new Comparator<Hchar>() {
 			@Override
 			public int compare(Hchar o1, Hchar o2) {
@@ -25,7 +31,7 @@ public class HuffmanStringAlg extends Compressor {
 		_dicCharToBin = dicCharToBin;
 	}
 	
-	public HuffmanStringAlg() {
+	public HuffmanByteAlg() {
 		_queHTree = new PriorityQueue<Hchar>(new Comparator<Hchar>() {
 			@Override
 			public int compare(Hchar o1, Hchar o2) {
@@ -35,7 +41,7 @@ public class HuffmanStringAlg extends Compressor {
 	}
 
 	@Override
-	public String compress(String input) {
+	public byte[] compress(String input) {
 		
 		// If we don't already have a dictionary
 		if (_dicBinToChar == null) {
@@ -45,12 +51,12 @@ public class HuffmanStringAlg extends Compressor {
 			buildHTreeFromQueue();
 		}
 		
-		String sEncoded = "";
+		byte[] arrEncoded= new byte[] {};
 		for (char cChar : input.toCharArray()) {
-			sEncoded = sEncoded.concat(_dicCharToBin.get(cChar).binRep);
+			arrEncoded = joinByteArray(arrEncoded, _dicCharToBin.get(cChar).binRep);
 		}
 
-		return sEncoded;
+		return arrEncoded;
 	}
 	
 	@Override
@@ -60,18 +66,22 @@ public class HuffmanStringAlg extends Compressor {
 			reverseDictionary();
 		}
 		
-		String input = (String) stream;
+		byte[] encodedInput = (byte[]) stream;
+		String decodedInput = "";
 		
-		Character cChar = null;
-		String decompressed = "";
+		byte[] encodedChar = new byte[] {}; 
+		Character decodedChar = null;
 		
-		for (int iStart = 0, iEnd = 0; iEnd < input.length();) {
+		
+		for (int iStart = 0, iEnd = 0; iEnd < encodedInput.length;) {
 			boolean bFound = false;
-			while (!bFound && iEnd <= input.length()) {
-				cChar = _dicBinToChar.get(input.substring(iStart, iEnd));
+			while (!bFound && iEnd <= encodedInput.length) {
 				
-				if (cChar != null) {
-					decompressed += cChar;
+				encodedChar = Arrays.copyOfRange(encodedInput, iStart, iEnd);
+				decodedChar = _dicBinToChar.get(new ByteArrayWrapper(encodedChar));
+				
+				if (decodedChar != null) {
+					decodedInput += decodedChar;
 					bFound = true;
 					iStart = iEnd;
 				}
@@ -80,7 +90,7 @@ public class HuffmanStringAlg extends Compressor {
 			
 		}
 		
-		return decompressed;
+		return decodedInput;
 	}
 
 	private void buildQueueFromString(String input) {
@@ -89,20 +99,6 @@ public class HuffmanStringAlg extends Compressor {
 		
 		// Populate the queue by appearace count
 		_queHTree.addAll(_dicCharToBin.values());
-	}
-
-	/* For quick de-compression - a reverse dictionary
-	 * 
-	 */
-	private void reverseDictionary() {
-		_dicBinToChar = new HashMap<String, Character>();
-		
-		if (_dicCharToBin == null)
-			System.out.println("Huffman: No dictionary found!");
-		
-		for (Entry<Character, Hchar> pair : _dicCharToBin.entrySet()) {
-			_dicBinToChar.put(pair.getValue().binRep, pair.getKey());
-		}
 	}
 
 	private void buildHTreeFromQueue() {
@@ -119,7 +115,7 @@ public class HuffmanStringAlg extends Compressor {
 		
 		_hTop = _queHTree.peek();
 		
-		DFSbinRep(_hTop, "");
+		DFSbinRep(_hTop, new byte[] {});
 		
 		// Print the outcome for test purposes
 		System.out.println("Dictionary:");
@@ -127,17 +123,27 @@ public class HuffmanStringAlg extends Compressor {
 			System.out.println(hc.character + " " + hc.binRep);
 		}
 	}
-
-	private void DFSbinRep(Hchar node, String bin) {
-		node.binRep += bin;
-		if (node.left != null) {
-			DFSbinRep(node.left, node.binRep.concat("0"));
-		}
-		if (node.right != null) {
-			DFSbinRep(node.right, node.binRep.concat("1"));
+	
+	/* For quick de-compression - a reverse dictionary
+	 * 
+	 */
+	private void reverseDictionary() {
+		_dicBinToChar = new HashMap<ByteArrayWrapper, Character>();
+		for (Entry<Character, Hchar> pair : _dicCharToBin.entrySet()) {
+			_dicBinToChar.put(new ByteArrayWrapper(pair.getValue().binRep), pair.getKey());
 		}
 	}
 
+	private void DFSbinRep(Hchar node, byte[] bin) {
+		node.binRep = joinByteArray(node.binRep, bin);
+		if (node.left != null) {
+			DFSbinRep(node.left, joinByteArray(node.binRep, new byte[] {0}));
+		}
+		if (node.right != null) {
+			DFSbinRep(node.right, joinByteArray(node.binRep, new byte[] {1}));
+		}
+	}
+	
 	private HashMap<Character, Hchar> countAppearances(String input) {
 		// count appearances of characters
 		HashMap<Character, Hchar> countAppearance = new HashMap<Character, Hchar>();
@@ -154,17 +160,56 @@ public class HuffmanStringAlg extends Compressor {
 
 		return countAppearance;
 	}
+	
+	private byte[] joinByteArray(byte[] arr1, byte[] arr2) {
+		byte[] joined = new byte[arr1.length + arr2.length];
+		
+		System.arraycopy(arr1,0,joined,0 ,arr1.length);
+		System.arraycopy(arr2,0,joined,arr1.length,arr2.length);
+		
+		return joined;
+	}
 
 	public class Hchar {
 		int count;
 		String character;
 		Hchar left = null, right = null;
 		// an inefficient representation, change it to real bits!
-		String binRep = "";
+		byte[] binRep = new byte[0];
 
 		@Override
 		public int hashCode() {
 			return character.hashCode();
 		}
+	}
+	
+	public final class ByteArrayWrapper
+	{
+	    private final byte[] data;
+
+	    public ByteArrayWrapper(byte[] data)
+	    {
+	        if (data == null)
+	        {
+	            throw new NullPointerException();
+	        }
+	        this.data = data;
+	    }
+
+	    @Override
+	    public boolean equals(Object other)
+	    {
+	        if (!(other instanceof ByteArrayWrapper))
+	        {
+	            return false;
+	        }
+	        return Arrays.equals(data, ((ByteArrayWrapper)other).data);
+	    }
+
+	    @Override
+	    public int hashCode()
+	    {
+	        return Arrays.hashCode(data);
+	    }
 	}
 }

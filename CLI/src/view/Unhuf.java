@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import compression_algorithms.HuffmanReader;
-import compression_algorithms.HuffmanStringAlg;
+import compression_algorithms.HuffmanAlg;
 import compression_algorithms.HuffmanWriter;
 
 public class Unhuf implements Command {
 
-	HuffmanStringAlg _alg;
+	HuffmanAlg _alg;
 
-	public Unhuf(HuffmanStringAlg alg) {
+	public Unhuf(HuffmanAlg alg) {
 		_alg = alg;
 	}
 

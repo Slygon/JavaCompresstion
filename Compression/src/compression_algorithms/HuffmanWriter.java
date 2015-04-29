@@ -7,9 +7,9 @@ import java.util.Arrays;
 public class HuffmanWriter extends Writer {
 
 	Writer _out;
-	HuffmanStringAlg _huff;
+	HuffmanAlg _huff;
 
-	public HuffmanWriter(Writer out, HuffmanStringAlg huff) {
+	public HuffmanWriter(Writer out, HuffmanAlg huff) {
 		_out = out;
 		_huff = huff;
 	}
