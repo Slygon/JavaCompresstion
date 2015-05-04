@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import compression_algorithms.HuffmanReader;
 import compression_algorithms.HuffmanAlg;
 import compression_algorithms.HuffmanWriter;
 
